@@ -1,15 +1,24 @@
-import { StyleSheet, TouchableOpacity } from "react-native";
+import { ScrollView, StyleSheet, TouchableOpacity } from "react-native";
 
 import { Text, View } from "../components/Themed";
-import { RootStackScreenProps } from "../types";
+import { RootStackScreenProps, useAppDispatch, useAppSelector } from "../types";
 import mainCategories from "../mocks/categories.json";
 import { useEffect, useState } from "react";
+import { removeLastSubCat } from "../store/shared/sharedSlice";
 
 export default function ProductsScreen({
   navigation,
   route,
 }: RootStackScreenProps<"Products">) {
-  const { mainCat, subCat } = route.params;
+  const {
+    shared: { subCats },
+  } = useAppSelector((state) => state);
+
+  const dispatch = useAppDispatch();
+
+  const {
+    shared: { mainCat },
+  } = useAppSelector((state) => state);
   const [products, setProducts] = useState<Array<any>>([]);
 
   const loadData = () => JSON.parse(JSON.stringify(mainCategories));
@@ -21,30 +30,27 @@ export default function ProductsScreen({
     const subcategories =
       (categories.CategoriesArray &&
         categories.CategoriesArray.find(
-          (sub: any) => sub.CategoryValue === subCat.value
+          (sub: any) => sub.CategoryValue === subCats[subCats.length - 1].value
         )) ||
       [];
 
     setProducts(subcategories.Products);
+
+    navigation.addListener("beforeRemove", () => {
+      dispatch(removeLastSubCat());
+    });
   }, [mainCat]);
 
   return (
-    <View style={styles.container}>
-      {products.map((pro, index) => (
-        <TouchableOpacity
-          key={index}
-          //   onPress={() => {
-          //     if (pro.CategoriesArray) {
-          //       navigation.navigate("Categories", {
-          //         mainCat: cat.CategoryValue,
-          //       });
-          //     }
-          //   }}
-        >
-          <Text>{pro.name}</Text>
-        </TouchableOpacity>
-      ))}
-    </View>
+    <ScrollView>
+      <View style={styles.container}>
+        {products.map((pro, index) => (
+          <Text key={index} style={{ marginBottom: 10 }}>
+            {pro.name}
+          </Text>
+        ))}
+      </View>
+    </ScrollView>
   );
 }
 

@@ -9,6 +9,12 @@ import {
   NavigatorScreenParams,
 } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
+import type { RootState, AppDispatch } from "./store";
+
+// Use throughout your app instead of plain `useDispatch` and `useSelector`
+export const useAppDispatch = () => useDispatch<AppDispatch>();
+export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
 
 declare global {
   namespace ReactNavigation {
@@ -20,8 +26,8 @@ export type RootStackParamList = {
   Root: NavigatorScreenParams<RootTabParamList> | undefined;
   Modal: undefined;
   NotFound: undefined;
-  Categories: { mainCat: string; subCat?: { name: string; value: string } };
-  Products: { mainCat: string; subCat: { name: string; value: string } };
+  Categories: undefined;
+  Products: undefined;
 };
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> =

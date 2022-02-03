@@ -1,26 +1,41 @@
 import { StyleSheet, TouchableOpacity } from "react-native";
 
 import { Text, View } from "../components/Themed";
-import { RootStackScreenProps } from "../types";
+import { RootStackScreenProps, useAppDispatch, useAppSelector } from "../types";
 import mainCategories from "../mocks/categories.json";
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { appendSubCat, removeLastSubCat } from "../store/shared/sharedSlice";
 
 export default function CategoriesScreen({
   navigation,
   route,
 }: RootStackScreenProps<"Categories">) {
-  const { mainCat } = route.params;
+  const {
+    shared: { mainCat, subCats },
+  } = useAppSelector((state) => state);
+  const dispatch = useAppDispatch();
   const [categories, setCategories] = useState<Array<any>>([]);
+
+  useEffect(() => {
+    loadCategories();
+
+    navigation.addListener("beforeRemove", () => {
+      dispatch(removeLastSubCat());
+    });
+  }, [mainCat]);
 
   const loadData = () => JSON.parse(JSON.stringify(mainCategories));
 
-  useEffect(() => {
+  const loadCategories = () => {
     const data = loadData();
 
-    const categories = data.find((d: any) => d.CategoryValue === mainCat);
+    const firstLevelCategories = data.find(
+      (d: any) => d.CategoryValue === mainCat
+    );
 
-    setCategories(categories.CategoriesArray);
-  }, [mainCat]);
+    setCategories(firstLevelCategories.CategoriesArray);
+  };
 
   return (
     <View style={styles.container}>
@@ -28,16 +43,14 @@ export default function CategoriesScreen({
         <TouchableOpacity
           key={index}
           onPress={() => {
+            dispatch(
+              appendSubCat({ name: cat.CatName, value: cat.CategoryValue })
+            );
+
             if (cat.CategoriesArray) {
-              navigation.navigate("Categories", {
-                mainCat,
-                subCat: { name: cat.CatName, value: cat.CategoryValue },
-              });
+              navigation.push("Categories");
             } else {
-              navigation.push("Products", {
-                mainCat,
-                subCat: { name: cat.CatName, value: cat.CategoryValue },
-              });
+              navigation.push("Products");
             }
           }}
         >

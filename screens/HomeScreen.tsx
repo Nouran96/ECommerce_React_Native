@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
 import { StyleSheet, TouchableOpacity } from "react-native";
 
-import EditScreenInfo from "../components/EditScreenInfo";
 import { Text, View } from "../components/Themed";
-import { RootTabScreenProps } from "../types";
+import { RootTabScreenProps, useAppDispatch } from "../types";
 import categories from "../mocks/categories.json";
+import { addMainCat } from "../store/shared/sharedSlice";
 
 export default function HomeScreen({ navigation }: RootTabScreenProps<"Home">) {
   const [data, setData] = useState<Array<any>>([]);
+  const dispatch = useAppDispatch();
+
   useEffect(() => {
     const loadData = () => JSON.parse(JSON.stringify(categories));
 
@@ -22,9 +24,8 @@ export default function HomeScreen({ navigation }: RootTabScreenProps<"Home">) {
             key={index}
             onPress={() => {
               if (cat.CategoriesArray) {
-                navigation.navigate("Categories", {
-                  mainCat: cat.CategoryValue,
-                });
+                dispatch(addMainCat(cat.CategoryValue));
+                navigation.navigate("Categories");
               }
             }}
           >
