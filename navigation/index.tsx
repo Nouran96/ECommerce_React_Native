@@ -25,10 +25,12 @@ import {
   RootStackParamList,
   RootTabParamList,
   RootTabScreenProps,
+  useAppSelector,
 } from "../types";
 import LinkingConfiguration from "./LinkingConfiguration";
 import CategoriesScreen from "../screens/CategoriesScreen";
 import ProductsScreen from "../screens/ProductsScreen";
+import ProductDetailsScreen from "../screens/ProductDetailsScreen";
 
 export default function Navigation({
   colorScheme,
@@ -52,8 +54,14 @@ export default function Navigation({
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 function RootNavigator() {
+  const {
+    shared: { mainCat, subCats },
+  } = useAppSelector((state) => state);
+
   return (
-    <Stack.Navigator>
+    <Stack.Navigator
+      screenOptions={{ contentStyle: { backgroundColor: "#fff" } }}
+    >
       <Stack.Screen
         name="Root"
         component={BottomTabNavigator}
@@ -65,8 +73,29 @@ function RootNavigator() {
         options={{ title: "Oops!" }}
       />
       <Stack.Group>
-        <Stack.Screen name="Categories" component={CategoriesScreen} />
-        <Stack.Screen name="Products" component={ProductsScreen} />
+        <Stack.Screen
+          name="Categories"
+          component={CategoriesScreen}
+          options={{
+            headerTitle: mainCat.slice(0, 1).toUpperCase() + mainCat.slice(1),
+          }}
+        />
+        <Stack.Screen
+          name="Products"
+          component={ProductsScreen}
+          options={{
+            ...(subCats?.length > 0
+              ? { headerTitle: subCats[subCats.length - 1].name }
+              : {}),
+          }}
+        />
+        <Stack.Screen
+          name="ProductDetails"
+          component={ProductDetailsScreen}
+          options={{
+            headerTitle: "",
+          }}
+        />
       </Stack.Group>
       <Stack.Group screenOptions={{ presentation: "modal" }}>
         <Stack.Screen name="Modal" component={ModalScreen} />

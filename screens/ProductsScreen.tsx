@@ -15,14 +15,11 @@ export default function ProductsScreen({
   const colorScheme = useColorScheme();
 
   const {
-    shared: { subCats },
+    shared: { subCats, mainCat },
   } = useAppSelector((state) => state);
 
   const dispatch = useAppDispatch();
 
-  const {
-    shared: { mainCat },
-  } = useAppSelector((state) => state);
   const [products, setProducts] = useState<Array<any>>([]);
 
   const loadData = () => JSON.parse(JSON.stringify(mainCategories));
@@ -49,7 +46,13 @@ export default function ProductsScreen({
     <ScrollView>
       <View style={styles.container}>
         {products.map((pro, index) => (
-          <View style={styles.product} key={index}>
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate("ProductDetails", { code: pro.code })
+            }
+            key={index}
+            style={styles.product}
+          >
             {pro.images && pro.images.length > 0 && (
               <View>
                 <Image
@@ -73,7 +76,7 @@ export default function ProductsScreen({
                 <Text style={styles.price}>{pro.price.value}</Text>
               </View>
             </View>
-          </View>
+          </TouchableOpacity>
         ))}
       </View>
     </ScrollView>
@@ -90,6 +93,7 @@ const styles = StyleSheet.create({
     width: "50%",
     alignItems: "center",
     marginVertical: 15,
+    // flexWrap: "wrap",
   },
   productImage: {
     width: 150,
