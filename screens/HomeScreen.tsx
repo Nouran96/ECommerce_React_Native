@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { StyleSheet, TouchableOpacity } from "react-native";
+import { StyleSheet, TouchableOpacity, Image } from "react-native";
 
 import { Text, View } from "../components/Themed";
 import { RootTabScreenProps, useAppDispatch } from "../types";
@@ -19,6 +19,13 @@ export default function HomeScreen({ navigation }: RootTabScreenProps<"Home">) {
   if (data.length > 0) {
     return (
       <View style={styles.container}>
+        <View style={styles.logoContainer}>
+          <Image
+            style={styles.tinyLogo}
+            source={require("../assets/images/logo.png")}
+          />
+          <Text style={{ fontWeight: "bold" }}>Beauty</Text>
+        </View>
         {data.map((cat, index) => (
           <TouchableOpacity
             key={index}
@@ -40,8 +47,16 @@ export default function HomeScreen({ navigation }: RootTabScreenProps<"Home">) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  logoContainer: {
+    marginTop: 30,
+    flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
+  },
+  tinyLogo: {
+    width: 50,
+    height: 100,
   },
   title: {
     fontSize: 20,
