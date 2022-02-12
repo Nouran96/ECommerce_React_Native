@@ -16,22 +16,30 @@ import Colors from "../constants/Colors";
 
 interface MainButtonProps {
   title: string;
+  onPress: () => void;
   otherStyles?: {};
+  disabled?: boolean;
 }
 
-export default function MainButton({ title, otherStyles }: MainButtonProps) {
+export default function MainButton({
+  title,
+  otherStyles,
+  disabled,
+  onPress,
+}: MainButtonProps) {
   const colorScheme = useColorScheme();
 
   return (
-    <TouchableOpacity>
+    <TouchableOpacity disabled={disabled} onPress={onPress}>
       <View
         style={{
           ...styles.btnContainer,
           ...{ backgroundColor: Colors[colorScheme].text },
+          ...(disabled ? { ...styles.disabled } : {}),
           ...otherStyles,
         }}
       >
-        <Text style={{ color: "white" }}>{title}</Text>
+        <Text style={{ color: "white", textAlign: "center" }}>{title}</Text>
       </View>
     </TouchableOpacity>
   );
@@ -42,5 +50,8 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 10,
+  },
+  disabled: {
+    backgroundColor: "#999",
   },
 });

@@ -14,6 +14,8 @@ import { useEffect, useState } from "react";
 import useColorScheme from "../hooks/useColorScheme";
 import Colors from "../constants/Colors";
 import MainButton from "../components/MainButton";
+import { addProductToCart } from "../store/cart/cartSlice";
+import ColorView from "../components/ColorView";
 
 export default function ProductDetailsScreen({
   navigation,
@@ -55,6 +57,18 @@ export default function ProductDetailsScreen({
     }
   }, [mainCat]);
 
+  const addProduct = () => {
+    const fullProduct = {
+      ...product,
+      code: `${product.code}_${productSize}_${productColor}`,
+      selectedColor: productColor,
+      selectedSize: productSize,
+      quantity: 1,
+    };
+
+    dispatch(addProductToCart(fullProduct));
+  };
+
   return (
     <ScrollView>
       <View style={styles.container}>
@@ -77,11 +91,12 @@ export default function ProductDetailsScreen({
               <View>
                 <Text>Select Size</Text>
                 <View style={styles.sizesContainer}>
-                  {product.variantSizes
+                  {[...product.variantSizes]
                     .sort((a: any, b: any) => a.orderFilter - b.orderFilter)
                     .map((size: any) => (
                       <TouchableOpacity
                         onPress={() => setSize(size.filterCode)}
+                        key={size.filterCode}
                       >
                         <Text
                           style={{
@@ -107,20 +122,15 @@ export default function ProductDetailsScreen({
               <View>
                 <Text>Select Color</Text>
                 <View style={styles.sizesContainer}>
-                  {product.rgbColors.map((color: any) => (
-                    <TouchableOpacity onPress={() => setColor(color)}>
-                      <View
-                        style={{
-                          ...styles.color,
-                          ...{ backgroundColor: color },
-                          ...(color === productColor
-                            ? {
-                                borderWidth: 3,
-                                borderColor: Colors[colorScheme].tint,
-                              }
-                            : {}),
-                        }}
-                      ></View>
+                  {product.rgbColors.map((color: any, index: number) => (
+                    <TouchableOpacity
+                      onPress={() => setColor(color)}
+                      key={index}
+                    >
+                      <ColorView
+                        color={color}
+                        selected={color === productColor}
+                      />
                     </TouchableOpacity>
                   ))}
                 </View>
@@ -146,7 +156,11 @@ export default function ProductDetailsScreen({
                 <Text style={styles.price}>{product.price.value}</Text>
               </View>
 
-              <MainButton title="Add to Cart" />
+              <MainButton
+                onPress={addProduct}
+                disabled={!productSize || !productColor}
+                title="Add to Cart"
+              />
             </View>
           </View>
         )}
@@ -215,12 +229,5 @@ const styles = StyleSheet.create({
     textAlign: "center",
     borderRadius: 10,
     minWidth: 30,
-  },
-  color: {
-    width: 30,
-    height: 30,
-    borderRadius: 10,
-    marginEnd: 10,
-    marginBottom: 10,
   },
 });

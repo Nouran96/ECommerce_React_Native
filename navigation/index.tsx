@@ -12,7 +12,7 @@ import {
 } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import * as React from "react";
-import { ColorSchemeName, Pressable } from "react-native";
+import { ColorSchemeName, Pressable, View } from "react-native";
 
 import Colors from "../constants/Colors";
 import useColorScheme from "../hooks/useColorScheme";
@@ -31,6 +31,7 @@ import LinkingConfiguration from "./LinkingConfiguration";
 import CategoriesScreen from "../screens/CategoriesScreen";
 import ProductsScreen from "../screens/ProductsScreen";
 import ProductDetailsScreen from "../screens/ProductDetailsScreen";
+import HeaderCart from "../components/HeaderCart";
 
 export default function Navigation({
   colorScheme,
@@ -87,6 +88,7 @@ function RootNavigator() {
             ...(subCats?.length > 0
               ? { headerTitle: subCats[subCats.length - 1].name }
               : {}),
+            headerRight: ({ tintColor }) => <HeaderCart color={tintColor} />,
           }}
         />
         <Stack.Screen
@@ -94,6 +96,7 @@ function RootNavigator() {
           component={ProductDetailsScreen}
           options={{
             headerTitle: "",
+            headerRight: ({ tintColor }) => <HeaderCart color={tintColor} />,
           }}
         />
       </Stack.Group>
