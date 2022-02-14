@@ -1,4 +1,5 @@
 import { ScrollView, StyleSheet, TouchableOpacity, Image } from "react-native";
+import { FontAwesome } from "@expo/vector-icons";
 
 import { Text, View } from "../components/Themed";
 import {
@@ -7,14 +8,15 @@ import {
   useAppDispatch,
   useAppSelector,
 } from "../types";
-import mainCategories from "../mocks/categories.json";
-import { useEffect, useState } from "react";
-import { removeLastSubCat } from "../store/shared/sharedSlice";
 import useColorScheme from "../hooks/useColorScheme";
 import Colors from "../constants/Colors";
 import ColorView from "../components/ColorView";
 import MainButton from "../components/MainButton";
-import { addProductToCart, decrementQuantity } from "../store/cart/cartSlice";
+import {
+  addProductToCart,
+  decrementQuantity,
+  removeProductFromCart,
+} from "../store/cart/cartSlice";
 
 export default function BagScreen({ navigation }: RootTabScreenProps<"Bag">) {
   const colorScheme = useColorScheme();
@@ -26,7 +28,7 @@ export default function BagScreen({ navigation }: RootTabScreenProps<"Bag">) {
   const dispatch = useAppDispatch();
 
   return (
-    <ScrollView>
+    <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
       <View style={styles.container}>
         {Object.keys(products ?? {}).length > 0 ? (
           <View>
@@ -78,26 +80,65 @@ export default function BagScreen({ navigation }: RootTabScreenProps<"Bag">) {
                       width: "100%",
                     }}
                   >
-                    <MainButton
-                      title="-"
-                      disabled={pro.quantity === 1}
-                      onPress={() => dispatch(decrementQuantity(pro))}
-                    />
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                      }}
+                    >
+                      <MainButton
+                        title="-"
+                        disabled={pro.quantity === 1}
+                        onPress={() => dispatch(decrementQuantity(pro))}
+                      />
 
-                    <Text>{pro.quantity}</Text>
-                    <MainButton
-                      title="+"
-                      onPress={() => dispatch(addProductToCart(pro))}
-                    />
+                      <Text style={{ paddingHorizontal: 15 }}>
+                        {pro.quantity}
+                      </Text>
+                      <MainButton
+                        title="+"
+                        onPress={() => dispatch(addProductToCart(pro))}
+                      />
+                    </View>
+
+                    <TouchableOpacity
+                      onPress={() => dispatch(removeProductFromCart(pro))}
+                    >
+                      <FontAwesome
+                        name="remove"
+                        size={24}
+                        color={Colors[colorScheme].tint}
+                      />
+                    </TouchableOpacity>
                   </View>
                 </View>
               </View>
             ))}
 
             <MainButton title="Checkout" onPress={() => {}} />
+            <MainButton
+              title="Continue Shopping"
+              otherStyles={{ marginVertical: 10 }}
+              onPress={() => navigation.navigate("Home")}
+            />
           </View>
         ) : (
-          <Text>No products in bag yet</Text>
+          <View
+            style={{
+              flex: 1,
+              padding: 10,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Text>No products in bag yet</Text>
+            <MainButton
+              title="Continue Shopping"
+              otherStyles={{ marginVertical: 10 }}
+              onPress={() => navigation.navigate("Home")}
+            />
+          </View>
         )}
       </View>
     </ScrollView>
@@ -106,20 +147,13 @@ export default function BagScreen({ navigation }: RootTabScreenProps<"Bag">) {
 
 const styles = StyleSheet.create({
   container: {
-    // display: "flex",
-    // flexDirection: "row",
-    // width: "100%",
     flex: 1,
-    // flexWrap: "wrap",
-    margin: 10,
   },
   product: {
     width: "100%",
     flexDirection: "row",
-    // alignItems: "center",
     marginTop: 15,
     marginBottom: 30,
-    // flexWrap: "wrap",
   },
   productImage: {
     width: 150,
