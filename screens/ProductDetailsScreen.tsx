@@ -1,11 +1,5 @@
-import {
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-  Image,
-  Button,
-  TouchableHighlight,
-} from "react-native";
+import { ScrollView, StyleSheet, TouchableOpacity, Image } from "react-native";
+import { AntDesign } from "@expo/vector-icons";
 
 import { Text, View } from "../components/Themed";
 import { RootStackScreenProps, useAppDispatch, useAppSelector } from "../types";
@@ -16,16 +10,18 @@ import Colors from "../constants/Colors";
 import MainButton from "../components/MainButton";
 import { addProductToCart } from "../store/cart/cartSlice";
 import ColorView from "../components/ColorView";
+import { toggleProductFromWishlist } from "../store/wishlist/wishlistSlice";
 
 export default function ProductDetailsScreen({
   navigation,
   route,
 }: RootStackScreenProps<"ProductDetails">) {
-  const { code } = route.params;
+  const { code, product: incomingProduct } = route.params;
   const colorScheme = useColorScheme();
 
   const {
     shared: { subCats, mainCat },
+    wishlist: { products },
   } = useAppSelector((state) => state);
 
   const dispatch = useAppDispatch();
@@ -36,26 +32,34 @@ export default function ProductDetailsScreen({
   const loadData = () => JSON.parse(JSON.stringify(mainCategories));
 
   useEffect(() => {
-    const data = loadData();
+    if (mainCat) {
+      const data = loadData();
 
-    const categories = data.find((d: any) => d.CategoryValue === mainCat);
+      const categories = data.find((d: any) => d.CategoryValue === mainCat);
 
-    if (subCats.length > 0) {
-      const subcategories =
-        (categories.CategoriesArray &&
-          categories.CategoriesArray.find(
-            (sub: any) =>
-              sub.CategoryValue === subCats[subCats.length - 1].value
-          )) ||
-        [];
+      if (subCats.length > 0) {
+        const subcategories =
+          (categories.CategoriesArray &&
+            categories.CategoriesArray.find(
+              (sub: any) =>
+                sub.CategoryValue === subCats[subCats.length - 1].value
+            )) ||
+          [];
 
-      const productDetails =
-        subcategories.Products &&
-        subcategories.Products.find((p: any) => p.code === code);
+        const productDetails =
+          subcategories.Products &&
+          subcategories.Products.find((p: any) => p.code === code);
 
-      setProduct(productDetails);
+        setProduct(productDetails);
+      }
     }
   }, [mainCat]);
+
+  useEffect(() => {
+    if (incomingProduct) {
+      setProduct(incomingProduct);
+    }
+  }, [incomingProduct]);
 
   const addProduct = () => {
     const fullProduct = {
@@ -74,8 +78,17 @@ export default function ProductDetailsScreen({
       <View style={styles.container}>
         {product && (
           <View style={styles.product}>
-            <View style={styles.productContent}>
+            <View style={styles.titleContainer}>
               <Text style={styles.title}>{product.name}</Text>
+              <TouchableOpacity
+                onPress={() => dispatch(toggleProductFromWishlist(product))}
+              >
+                <AntDesign
+                  name={products[product.code] ? "heart" : "hearto"}
+                  size={30}
+                  color={Colors[colorScheme].tint}
+                />
+              </TouchableOpacity>
             </View>
 
             {product.images && product.images.length > 0 && (
@@ -189,15 +202,18 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     resizeMode: "cover",
   },
-  productContent: {
-    display: "flex",
+  titleContainer: {
+    // display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
     flexGrow: 1,
     flex: 1,
     marginHorizontal: 15,
   },
   title: {
     marginBottom: 15,
-    textAlign: "center",
+    // textAlign: "center",
     fontSize: 20,
   },
   currency: {
