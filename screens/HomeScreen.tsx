@@ -5,6 +5,7 @@ import { Text, View } from "../components/Themed";
 import { RootTabScreenProps, useAppDispatch } from "../types";
 import categories from "../mocks/categories.json";
 import { addMainCat } from "../store/shared/sharedSlice";
+import MainCarousel from "../components/MainCarousel";
 
 export default function HomeScreen({ navigation }: RootTabScreenProps<"Home">) {
   const [data, setData] = useState<Array<any>>([]);
@@ -13,7 +14,41 @@ export default function HomeScreen({ navigation }: RootTabScreenProps<"Home">) {
   useEffect(() => {
     const loadData = () => JSON.parse(JSON.stringify(categories));
 
-    setData(loadData());
+    const data = loadData();
+
+    // const carouselData = data.map((cat: any) => ({
+    //   title: cat.CatName,
+    //   src: require(`../assets/images/${cat.CategoryValue}_model.jpg`)
+    // }))
+
+    // setData(loadData());
+    setData([
+      {
+        title: "Women",
+        styles: {
+          color: "white",
+        },
+        src: require("../assets/images/ladies_model.jpg"),
+        cat: data[0],
+      },
+      {
+        title: "Men",
+        styles: {
+          color: "#e1b823",
+        },
+        src: require("../assets/images/men_model.jpg"),
+        cat: data[1],
+      },
+      {
+        title: "Kids",
+        styles: {
+          color: "#e1b823",
+          fontSize: 60,
+        },
+        src: require("../assets/images/kids_model.jpg"),
+        cat: data[2],
+      },
+    ]);
   }, []);
 
   if (data.length > 0) {
@@ -26,19 +61,7 @@ export default function HomeScreen({ navigation }: RootTabScreenProps<"Home">) {
           />
           <Text style={{ fontWeight: "bold" }}>Beauty</Text>
         </View>
-        {data.map((cat, index) => (
-          <TouchableOpacity
-            key={index}
-            onPress={() => {
-              if (cat.CategoriesArray) {
-                dispatch(addMainCat(cat.CategoryValue));
-                navigation.navigate("Categories");
-              }
-            }}
-          >
-            <Text>{cat.CatName}</Text>
-          </TouchableOpacity>
-        ))}
+        <MainCarousel data={data} />
       </View>
     );
   } else return null;
