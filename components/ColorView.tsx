@@ -5,9 +5,14 @@ import useColorScheme from "../hooks/useColorScheme";
 interface ColorViewProps {
   color: string;
   selected?: boolean;
+  otherStyles?: {};
 }
 
-export default function ColorView({ color, selected }: ColorViewProps) {
+export default function ColorView({
+  color,
+  selected,
+  otherStyles,
+}: ColorViewProps) {
   const colorScheme = useColorScheme();
 
   return (
@@ -21,6 +26,7 @@ export default function ColorView({ color, selected }: ColorViewProps) {
               borderColor: Colors[colorScheme].tint,
             }
           : {}),
+        ...otherStyles,
       }}
     ></View>
   );

@@ -1,122 +1,30 @@
-import { ScrollView, StyleSheet, TouchableOpacity, Image } from "react-native";
-import { FontAwesome } from "@expo/vector-icons";
+import { ScrollView, StyleSheet } from "react-native";
 
 import { Text, View } from "../components/Themed";
-import {
-  RootStackScreenProps,
-  RootTabScreenProps,
-  useAppDispatch,
-  useAppSelector,
-} from "../types";
-import useColorScheme from "../hooks/useColorScheme";
-import Colors from "../constants/Colors";
-import ColorView from "../components/ColorView";
+import { RootTabScreenProps, useAppSelector } from "../types";
 import MainButton from "../components/MainButton";
-import {
-  addProductToCart,
-  decrementQuantity,
-  removeProductFromCart,
-} from "../store/cart/cartSlice";
+import ProductCard from "../components/ProductCard";
 
 export default function BagScreen({ navigation }: RootTabScreenProps<"Bag">) {
-  const colorScheme = useColorScheme();
-
   const {
     cart: { products },
   } = useAppSelector((state) => state);
-
-  const dispatch = useAppDispatch();
 
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
       <View style={styles.container}>
         {Object.keys(products ?? {}).length > 0 ? (
-          <View>
+          <View style={{ padding: 10 }}>
             {Object.values(products ?? {}).map((pro, index) => (
-              <View key={index} style={styles.product}>
-                {pro.images && pro.images.length > 0 && (
-                  <View>
-                    <Image
-                      style={styles.productImage}
-                      source={{ uri: pro.images[0].url }}
-                    />
-                  </View>
-                )}
-
-                <View style={styles.productContent}>
-                  <Text style={styles.title}>{pro.name}</Text>
-                  <View style={styles.priceContainer}>
-                    <Text
-                      style={{
-                        ...styles.currency,
-                        color: Colors[colorScheme].tint,
-                      }}
-                    >
-                      $
-                    </Text>
-                    <Text style={styles.price}>
-                      {(pro.price.value * pro.quantity).toFixed(2)}
-                    </Text>
-                  </View>
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                      width: "100%",
-                    }}
-                  >
-                    <Text style={styles.row}>Size: {pro.selectedSize}</Text>
-                    <View style={styles.row}>
-                      <Text>Color: </Text>
-                      <ColorView color={pro.selectedColor} />
-                    </View>
-                  </View>
-
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      width: "100%",
-                    }}
-                  >
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                      }}
-                    >
-                      <MainButton
-                        title="-"
-                        disabled={pro.quantity === 1}
-                        onPress={() => dispatch(decrementQuantity(pro))}
-                      />
-
-                      <Text style={{ paddingHorizontal: 15 }}>
-                        {pro.quantity}
-                      </Text>
-                      <MainButton
-                        title="+"
-                        onPress={() => dispatch(addProductToCart(pro))}
-                      />
-                    </View>
-
-                    <TouchableOpacity
-                      onPress={() => dispatch(removeProductFromCart(pro))}
-                    >
-                      <FontAwesome
-                        name="remove"
-                        size={24}
-                        color={Colors[colorScheme].tint}
-                      />
-                    </TouchableOpacity>
-                  </View>
-                </View>
+              <View key={index}>
+                <ProductCard product={pro} showCartControls />
               </View>
             ))}
 
-            <MainButton title="Checkout" onPress={() => {}} />
+            <MainButton
+              title="Checkout"
+              onPress={() => navigation.navigate("Checkout")}
+            />
             <MainButton
               title="Continue Shopping"
               otherStyles={{ marginVertical: 10 }}
@@ -148,46 +56,5 @@ export default function BagScreen({ navigation }: RootTabScreenProps<"Bag">) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  product: {
-    width: "100%",
-    flexDirection: "row",
-    marginTop: 15,
-    marginBottom: 30,
-  },
-  productImage: {
-    width: 150,
-    height: 150,
-    borderRadius: 30,
-  },
-  productContent: {
-    alignItems: "flex-start",
-    flexGrow: 1,
-    flex: 1,
-    marginHorizontal: 15,
-  },
-  title: {
-    marginVertical: 10,
-    // textAlign: "center",
-  },
-  row: {
-    flexDirection: "row",
-    justifyContent: "flex-start",
-    marginVertical: 5,
-  },
-  currency: {
-    fontSize: 25,
-    fontWeight: "bold",
-    marginEnd: 7,
-  },
-  priceContainer: {
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  price: {
-    fontWeight: "bold",
-    fontSize: 17,
   },
 });

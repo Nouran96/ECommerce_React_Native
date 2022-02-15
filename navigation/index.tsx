@@ -16,7 +16,6 @@ import { ColorSchemeName, Pressable, View } from "react-native";
 
 import Colors from "../constants/Colors";
 import useColorScheme from "../hooks/useColorScheme";
-import ModalScreen from "../screens/ModalScreen";
 import NotFoundScreen from "../screens/NotFoundScreen";
 import HomeScreen from "../screens/HomeScreen";
 import BagScreen from "../screens/BagScreen";
@@ -32,6 +31,7 @@ import CategoriesScreen from "../screens/CategoriesScreen";
 import ProductsScreen from "../screens/ProductsScreen";
 import ProductDetailsScreen from "../screens/ProductDetailsScreen";
 import HeaderCart from "../components/HeaderCart";
+import CheckoutScreen from "../screens/CheckoutScreen";
 
 export default function Navigation({
   colorScheme,
@@ -99,10 +99,17 @@ function RootNavigator() {
             headerRight: ({ tintColor }) => <HeaderCart color={tintColor} />,
           }}
         />
+        <Stack.Screen
+          name="Checkout"
+          component={CheckoutScreen}
+          options={{
+            headerTitle: "Checkout",
+          }}
+        />
       </Stack.Group>
-      <Stack.Group screenOptions={{ presentation: "modal" }}>
+      {/* <Stack.Group screenOptions={{ presentation: "modal" }}>
         <Stack.Screen name="Modal" component={ModalScreen} />
-      </Stack.Group>
+      </Stack.Group> */}
     </Stack.Navigator>
   );
 }
