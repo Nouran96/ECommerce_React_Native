@@ -1,7 +1,7 @@
 import { ScrollView, StyleSheet, View, Image } from "react-native";
 
 import { Text } from "../components/Themed";
-import { RootStackScreenProps, useAppSelector } from "../types";
+import { RootStackScreenProps, useAppDispatch, useAppSelector } from "../types";
 import MainButton from "../components/MainButton";
 import ProductCard from "../components/ProductCard";
 import { useEffect, useState } from "react";
@@ -9,6 +9,7 @@ import PriceTag from "../components/PriceTag";
 import Colors from "../constants/Colors";
 import useColorScheme from "../hooks/useColorScheme";
 import PaymentMethods from "../components/PaymentMethods";
+import { resetCart } from "../store/cart/cartSlice";
 
 export default function CheckoutScreen({
   navigation,
@@ -16,6 +17,8 @@ export default function CheckoutScreen({
   const {
     cart: { products },
   } = useAppSelector((state) => state);
+
+  const dispatch = useAppDispatch();
 
   const [selectedPayment, setSelectedPayment] = useState("");
 
@@ -36,6 +39,11 @@ export default function CheckoutScreen({
       setPrices({ ...prices, total, subtotal });
     }
   }, [products]);
+
+  const placeOrder = () => {
+    dispatch(resetCart());
+    navigation.navigate("PaymentStatus");
+  };
 
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
@@ -59,9 +67,14 @@ export default function CheckoutScreen({
             }}
           />
 
-          <PaymentMethods
-            onSelectedPayment={(value: string) => setSelectedPayment(value)}
-          />
+          <View>
+            <Text style={{ fontSize: 15, fontWeight: "bold" }}>
+              Choose Payment Card
+            </Text>
+            <PaymentMethods
+              onSelectedPayment={(value: string) => setSelectedPayment(value)}
+            />
+          </View>
 
           <View
             style={{
@@ -97,7 +110,7 @@ export default function CheckoutScreen({
           <MainButton
             disabled={!selectedPayment}
             title="Place Order"
-            onPress={() => {}}
+            onPress={placeOrder}
           />
           <MainButton
             title="Continue Shopping"

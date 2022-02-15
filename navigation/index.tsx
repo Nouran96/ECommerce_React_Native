@@ -32,6 +32,7 @@ import ProductsScreen from "../screens/ProductsScreen";
 import ProductDetailsScreen from "../screens/ProductDetailsScreen";
 import HeaderCart from "../components/HeaderCart";
 import CheckoutScreen from "../screens/CheckoutScreen";
+import PaymentStatusScreen from "../screens/PaymentStatusScreen";
 
 export default function Navigation({
   colorScheme,
@@ -104,6 +105,13 @@ function RootNavigator() {
           component={CheckoutScreen}
           options={{
             headerTitle: "Checkout",
+          }}
+        />
+        <Stack.Screen
+          name="PaymentStatus"
+          component={PaymentStatusScreen}
+          options={{
+            headerShown: false,
           }}
         />
       </Stack.Group>

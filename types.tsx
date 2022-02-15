@@ -29,6 +29,7 @@ export type RootStackParamList = {
   Products: undefined;
   ProductDetails: { code?: string; product?: any };
   Checkout: undefined;
+  PaymentStatus: undefined;
 };
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> =

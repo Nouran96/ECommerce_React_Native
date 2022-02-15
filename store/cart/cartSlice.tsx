@@ -39,11 +39,18 @@ export const cartSlice = createSlice({
         delete state.products[action.payload.code];
       }
     },
+    resetCart: (state) => {
+      state.products = {};
+    },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { addProductToCart, decrementQuantity, removeProductFromCart } =
-  cartSlice.actions;
+export const {
+  addProductToCart,
+  decrementQuantity,
+  removeProductFromCart,
+  resetCart,
+} = cartSlice.actions;
 
 export default cartSlice.reducer;
