@@ -1,11 +1,11 @@
 import { View, Image, StyleSheet, TouchableOpacity } from "react-native";
-import { FontAwesome } from "@expo/vector-icons";
+import { AntDesign } from "@expo/vector-icons";
 import { Text } from "./Themed";
 import Colors from "../constants/Colors";
 import useColorScheme from "../hooks/useColorScheme";
 import ColorView from "./ColorView";
 import MainButton from "./MainButton";
-import { useAppDispatch } from "../types";
+import { useAppDispatch, useAppSelector } from "../types";
 import {
   addProductToCart,
   decrementQuantity,
@@ -13,12 +13,15 @@ import {
 } from "../store/cart/cartSlice";
 import PriceTag from "./PriceTag";
 import { useNavigation } from "@react-navigation/native";
+import { toggleProductFromWishlist } from "../store/wishlist/wishlistSlice";
 
 interface ProductCardProps {
   product: any;
   showCartControls?: boolean;
   showQuantity?: boolean;
   imageStyles?: {};
+  showOnSaleTag?: boolean;
+  showWishlistBtn?: boolean;
 }
 
 export default function ProductCard({
@@ -26,30 +29,81 @@ export default function ProductCard({
   showCartControls,
   showQuantity,
   imageStyles,
+  showOnSaleTag,
+  showWishlistBtn,
 }: ProductCardProps) {
   const colorScheme = useColorScheme();
   const dispatch = useAppDispatch();
   const navigation = useNavigation();
+
+  const {
+    wishlist: { products },
+  } = useAppSelector((state) => state);
 
   return (
     <TouchableOpacity
       onPress={() => navigation.navigate("ProductDetails", { product })}
     >
       <View style={styles.product}>
-        {product.images && product.images.length > 0 && (
-          <View>
-            <Image
-              style={{ ...styles.productImage, ...imageStyles }}
-              source={{ uri: product.images[0].url }}
-            />
-          </View>
-        )}
+        <View style={{ position: "relative" }}>
+          {product.images && product.images.length > 0 && (
+            <View>
+              <Image
+                style={{ ...styles.productImage, ...imageStyles }}
+                source={{ uri: product.images[0].url }}
+              />
+            </View>
+          )}
+
+          {showWishlistBtn && (
+            <TouchableOpacity
+              onPress={() => dispatch(toggleProductFromWishlist(product))}
+              style={{ position: "absolute", right: 0, top: 0 }}
+            >
+              <AntDesign
+                name={products[product.code] ? "heart" : "hearto"}
+                size={30}
+                color={Colors[colorScheme].tint}
+              />
+            </TouchableOpacity>
+          )}
+
+          {showOnSaleTag && product.sale && (
+            <View
+              style={{
+                position: "absolute",
+                left: 0,
+                backgroundColor: Colors[colorScheme].tint,
+                borderRadius: 5,
+                paddingHorizontal: 5,
+                paddingVertical: 2,
+              }}
+            >
+              <Text style={{ color: "white" }}>on Sale</Text>
+            </View>
+          )}
+        </View>
 
         <View style={styles.productContent}>
           <Text style={styles.title}>
             {product.name} {showQuantity && `x${product.quantity}`}
           </Text>
-          <PriceTag price={product.price.value * product.quantity} />
+          <View style={{ flexDirection: "row" }}>
+            {product.sale && (
+              <PriceTag
+                price={product.whitePrice.value * product.quantity}
+                sale
+              />
+            )}
+
+            <PriceTag
+              price={
+                (product.sale
+                  ? product.redPrice.value
+                  : product.whitePrice.value) * product.quantity
+              }
+            />
+          </View>
           <View
             style={{
               flexDirection: "row",
@@ -101,8 +155,8 @@ export default function ProductCard({
               <TouchableOpacity
                 onPress={() => dispatch(removeProductFromCart(product))}
               >
-                <FontAwesome
-                  name="remove"
+                <AntDesign
+                  name="delete"
                   size={24}
                   color={Colors[colorScheme].tint}
                 />

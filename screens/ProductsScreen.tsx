@@ -7,13 +7,12 @@ import { useEffect, useState } from "react";
 import { removeLastSubCat } from "../store/shared/sharedSlice";
 import useColorScheme from "../hooks/useColorScheme";
 import Colors from "../constants/Colors";
+import SummarizedProductCard from "../components/SummarizedProductCard";
 
 export default function ProductsScreen({
   navigation,
   route,
 }: RootStackScreenProps<"Products">) {
-  const colorScheme = useColorScheme();
-
   const {
     shared: { subCats, mainCat },
   } = useAppSelector((state) => state);
@@ -45,38 +44,8 @@ export default function ProductsScreen({
   return (
     <ScrollView>
       <View style={styles.container}>
-        {products.map((pro, index) => (
-          <TouchableOpacity
-            onPress={() =>
-              navigation.navigate("ProductDetails", { code: pro.code })
-            }
-            key={index}
-            style={styles.product}
-          >
-            {pro.images && pro.images.length > 0 && (
-              <View>
-                <Image
-                  style={styles.productImage}
-                  source={{ uri: pro.images[0].url }}
-                />
-              </View>
-            )}
-
-            <View style={styles.productContent}>
-              <Text style={styles.title}>{pro.name}</Text>
-              <View style={styles.priceContainer}>
-                <Text
-                  style={{
-                    ...styles.currency,
-                    color: Colors[colorScheme].tint,
-                  }}
-                >
-                  $
-                </Text>
-                <Text style={styles.price}>{pro.price.value}</Text>
-              </View>
-            </View>
-          </TouchableOpacity>
+        {products.map((pro) => (
+          <SummarizedProductCard key={pro.code} product={pro} />
         ))}
       </View>
     </ScrollView>
@@ -89,45 +58,4 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     margin: 10,
   },
-  product: {
-    width: "50%",
-    alignItems: "center",
-    marginVertical: 15,
-    // flexWrap: "wrap",
-  },
-  productImage: {
-    width: 150,
-    height: 150,
-    borderRadius: 30,
-  },
-  productContent: {
-    display: "flex",
-    flexGrow: 1,
-    flex: 1,
-    marginHorizontal: 15,
-  },
-  title: {
-    marginVertical: 10,
-    textAlign: "center",
-  },
-  currency: {
-    fontSize: 25,
-    fontWeight: "bold",
-    marginEnd: 7,
-  },
-  priceContainer: {
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  price: {
-    fontWeight: "bold",
-    fontSize: 17,
-  },
-  // separator: {
-  //   marginVertical: 30,
-  //   height: 1,
-  //   width: "80%",
-  // },
 });

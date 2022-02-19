@@ -19,7 +19,7 @@ export default function ColorView({
     <View
       style={{
         ...styles.color,
-        ...{ backgroundColor: color },
+        ...{ backgroundColor: color, borderColor: "#aaa", borderWidth: 1 },
         ...(selected
           ? {
               borderWidth: 3,

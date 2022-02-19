@@ -39,7 +39,7 @@ export function Text(props: TextProps) {
       style={[
         {
           color,
-          fontFamily: "space-mono",
+          fontFamily: "Balsamiq Sans",
         },
         style,
       ]}

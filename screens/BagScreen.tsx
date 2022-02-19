@@ -17,7 +17,7 @@ export default function BagScreen({ navigation }: RootTabScreenProps<"Bag">) {
           <View style={{ padding: 10 }}>
             {Object.values(products ?? {}).map((pro, index) => (
               <View key={index}>
-                <ProductCard product={pro} showCartControls />
+                <ProductCard product={pro} showCartControls showOnSaleTag />
               </View>
             ))}
 

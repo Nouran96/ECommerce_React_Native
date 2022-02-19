@@ -11,6 +11,7 @@ import MainButton from "../components/MainButton";
 import { addProductToCart } from "../store/cart/cartSlice";
 import ColorView from "../components/ColorView";
 import { toggleProductFromWishlist } from "../store/wishlist/wishlistSlice";
+import PriceTag from "../components/PriceTag";
 
 export default function ProductDetailsScreen({
   navigation,
@@ -78,9 +79,18 @@ export default function ProductDetailsScreen({
       <View style={styles.container}>
         {product && (
           <View style={styles.product}>
-            <View style={styles.titleContainer}>
-              <Text style={styles.title}>{product.name}</Text>
+            <View style={{ position: "relative" }}>
+              {product.images && product.images.length > 0 && (
+                <View style={styles.imageContainer}>
+                  <Image
+                    style={styles.productImage}
+                    source={{ uri: product.images[0].url }}
+                  />
+                </View>
+              )}
+
               <TouchableOpacity
+                style={{ position: "absolute", right: 15, top: 10 }}
                 onPress={() => dispatch(toggleProductFromWishlist(product))}
               >
                 <AntDesign
@@ -89,16 +99,25 @@ export default function ProductDetailsScreen({
                   color={Colors[colorScheme].tint}
                 />
               </TouchableOpacity>
+
+              {product.sale && (
+                <View
+                  style={{
+                    position: "absolute",
+                    left: 15,
+                    top: 10,
+                    backgroundColor: Colors[colorScheme].tint,
+                    borderRadius: 5,
+                    paddingHorizontal: 5,
+                    paddingVertical: 2,
+                  }}
+                >
+                  <Text style={{ color: "white" }}>on Sale</Text>
+                </View>
+              )}
             </View>
 
-            {product.images && product.images.length > 0 && (
-              <View style={styles.imageContainer}>
-                <Image
-                  style={styles.productImage}
-                  source={{ uri: product.images[0].url }}
-                />
-              </View>
-            )}
+            <Text style={styles.title}>{product.name}</Text>
 
             {product.variantSizes?.length > 0 && (
               <View>
@@ -157,16 +176,18 @@ export default function ProductDetailsScreen({
                 alignItems: "center",
               }}
             >
-              <View style={styles.priceContainer}>
-                <Text
-                  style={{
-                    ...styles.currency,
-                    color: Colors[colorScheme].tint,
-                  }}
-                >
-                  $
-                </Text>
-                <Text style={styles.price}>{product.price.value}</Text>
+              <View style={{ flexDirection: "row", justifyContent: "center" }}>
+                {product.sale && (
+                  <PriceTag price={product.whitePrice.value} sale />
+                )}
+
+                <PriceTag
+                  price={
+                    product.sale
+                      ? product.redPrice.value
+                      : product.whitePrice.value
+                  }
+                />
               </View>
 
               <MainButton
@@ -202,35 +223,10 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     resizeMode: "cover",
   },
-  titleContainer: {
-    // display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    flexGrow: 1,
-    flex: 1,
-    marginHorizontal: 15,
-  },
   title: {
     marginBottom: 15,
     // textAlign: "center",
     fontSize: 20,
-  },
-  currency: {
-    fontSize: 25,
-    fontWeight: "bold",
-    marginEnd: 7,
-  },
-  priceContainer: {
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    marginVertical: 10,
-  },
-  price: {
-    fontWeight: "bold",
-    fontSize: 17,
   },
   sizesContainer: {
     flexDirection: "row",

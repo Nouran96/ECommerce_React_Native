@@ -6,6 +6,7 @@ import mainCategories from "../mocks/categories.json";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { appendSubCat, removeLastSubCat } from "../store/shared/sharedSlice";
+import Colors from "../constants/Colors";
 
 export default function CategoriesScreen({
   navigation,
@@ -54,7 +55,15 @@ export default function CategoriesScreen({
             }
           }}
         >
-          <Text>{cat.CatName}</Text>
+          <View
+            style={{
+              ...styles.categoryContainer,
+              backgroundColor: Colors["light"].tint,
+              borderColor: Colors["light"].tint,
+            }}
+          >
+            <Text style={styles.title}>{cat.CatName}</Text>
+          </View>
         </TouchableOpacity>
       ))}
     </View>
@@ -64,16 +73,17 @@ export default function CategoriesScreen({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+  },
+  categoryContainer: {
+    padding: 20,
+    margin: 15,
+    borderRadius: 10,
+    borderWidth: 1,
   },
   title: {
-    fontSize: 20,
+    color: "white",
     fontWeight: "bold",
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: "80%",
+    fontSize: 17,
+    textAlign: "center",
   },
 });
