@@ -143,7 +143,7 @@ export default function ProductCard({
                   onPress={() => dispatch(decrementQuantity(product))}
                 />
 
-                <Text style={{ paddingHorizontal: 15 }}>
+                <Text testID="quantity" style={{ paddingHorizontal: 15 }}>
                   {product.quantity}
                 </Text>
                 <MainButton

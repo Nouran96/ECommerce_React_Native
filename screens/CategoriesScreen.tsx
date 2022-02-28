@@ -35,7 +35,10 @@ export default function CategoriesScreen({
       (d: any) => d.CategoryValue === mainCat
     );
 
-    setCategories(firstLevelCategories.CategoriesArray);
+    setCategories([
+      ...firstLevelCategories.CategoriesArray,
+      { CatName: "On Sale", CategoryValue: "on-sale" },
+    ]);
   };
 
   return (
